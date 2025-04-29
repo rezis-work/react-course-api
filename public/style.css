@@ -46,7 +46,7 @@ nav {
   height: 110px;
   background-position: left;
   background-repeat: no-repeat;
-  content: url("/public/padre_gino.svg");
+  content: url("/public/linelogo.png");
   border-bottom: 1px solid #ccc;
   padding-bottom: 20px;
   padding-top: 20px;
@@ -119,7 +119,6 @@ h2::after {
 }
 
 .order {
-  width: 100%;
   margin-left: 5%;
 }
 

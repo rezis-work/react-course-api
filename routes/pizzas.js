@@ -14,7 +14,7 @@ export default async function (server, opts) {
           name: pizza.name,
           category: pizza.category,
           description: pizza.ingredients,
-          image: `/public/images/${pizza.pizza_type_id}.webp`,
+          image: `/public/pizzas/${pizza.pizza_type_id}.webp`,
           sizes: matchingPizza ? matchingPizza.sizes : {},
         };
       });
