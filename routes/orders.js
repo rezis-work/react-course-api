@@ -31,7 +31,7 @@ export default async function (server, opts) {
 
     const orderItems = Object.values(mergedCart);
 
-    const order = await Order.create({ data, time, items: orderItems });
+    const order = await Order.create({ date, time, items: orderItems });
 
     res.code(201).send({ orderId: order._id });
   });
