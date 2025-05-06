@@ -82,14 +82,20 @@ export default async function (server, opts) {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    const orders = await Order.find({}, { _id: 1, date: 1, time: 1 })
+    const orders = await Order.find({}, { _id: 1, time: 1 })
       .sort({
         _id: -1,
       })
       .skip(skip)
       .limit(limit);
-
-    res.send(orders);
+    console.log(orders);
+    res.send(
+      orders.map((order) => ({
+        id: order._id,
+        time: order.time,
+        totalPage: Math.floor(orders.length / limit),
+      }))
+    );
   });
 
   server.get("/api/past-order/:order_id", async (req, res) => {
