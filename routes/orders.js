@@ -53,7 +53,19 @@ export default async function (server, opts) {
       order.items.map(async ({ pizzaId, quantity }) => {
         const [pizza_type_id, size] = pizzaId.split("_");
         const pizzaType = await PizzaType.findOne({ pizza_type_id });
-        const pizza = await Pizza.findOne({ pizza_type_id, size });
+        const pizza = await Pizza.findOne({ id: pizza_type_id });
+
+        if (!pizzaType || !pizza) {
+          console.error(
+            `No records found for pizza_type_id: ${pizza_type_id}, size: ${size}`
+          );
+          return null;
+        }
+
+        const price = pizza.sizes[size.toUpperCase()] || 0;
+
+        console.log(pizzaType);
+        console.log(pizza);
 
         return {
           pizzaTypeId: pizza_type_id,
@@ -62,8 +74,8 @@ export default async function (server, opts) {
           description: pizzaType.description,
           size,
           quantity,
-          price: pizza.price || 0,
-          total: (pizza.price || 0) * quantity,
+          price,
+          total: price * quantity,
           image: `/images/pizzas/${pizza_type_id}.webp`,
         };
       })
@@ -72,7 +84,7 @@ export default async function (server, opts) {
     const total = orderItems.reduce((acc, item) => acc + item.total, 0);
 
     res.send({
-      order: { id: order._id, date: order.data, time: order.time, total },
+      order: { id: order._id, date: order.date, time: order.time, total },
       orderItems,
     });
   });
@@ -100,6 +112,7 @@ export default async function (server, opts) {
 
   server.get("/api/past-order/:order_id", async (req, res) => {
     const id = req.params.order_id;
+
     const order = await Order.findById(id);
     if (!order) {
       res.code(404).send({ error: "Order not found" });
@@ -110,18 +123,37 @@ export default async function (server, opts) {
       order.items.map(async ({ pizzaId, quantity }) => {
         const [pizza_type_id, size] = pizzaId.split("_");
         const pizzaType = await PizzaType.findOne({ pizza_type_id });
-        const pizza = await Pizza.findOne({ pizza_type_id, size });
+        const pizza = await Pizza.findOne({ id: pizza_type_id });
+
+        if (!pizzaType || !pizza) {
+          console.error(
+            `Missing data for pizza_type_id: ${pizza_type_id}, size: ${size}`
+          );
+          return {
+            pizzaTypeId: pizza_type_id,
+            name: "Unknown Pizza",
+            category: "Unknown",
+            description: "Not available",
+            size,
+            quantity,
+            price: 0,
+            total: 0,
+            image: "/images/pizzas/default.webp",
+          };
+        }
+
+        const price = pizza.sizes[size.toUpperCase()] || 0;
 
         return {
           pizzaTypeId: pizza_type_id,
           name: pizzaType.name,
           category: pizzaType.category,
-          description: pizzaType.description,
+          description: pizzaType.ingredients || "No description",
           size,
           quantity,
-          price: pizza.price || 0,
-          total: (pizza.price || 0) * quantity,
-          image: `/images/pizzas/${pizza_type_id}.webp`,
+          price,
+          total: price * quantity,
+          image: pizza.image || `/images/pizzas/${pizza_type_id}.webp`,
         };
       })
     );
@@ -129,7 +161,7 @@ export default async function (server, opts) {
     const total = orderItems.reduce((acc, item) => acc + item.total, 0);
 
     res.send({
-      order: { id: order._id, date: order.data, time: order.time, total },
+      order: { id: order._id, date: order.date, time: order.time, total },
       orderItems,
     });
   });

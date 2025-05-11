@@ -6,7 +6,7 @@ import { connectDB } from "./db.js";
 import pizzaRoutes from "./routes/pizzas.js";
 import pizzaOfTheDayRoutes from "./routes/pizzaOfTheDay.js";
 import orderRoutes from "./routes/orders.js";
-
+import contactRoutes from "./routes/contact.js";
 const server = fastify({ logger: true });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,5 +22,6 @@ await connectDB();
 server.register(pizzaRoutes);
 server.register(pizzaOfTheDayRoutes);
 server.register(orderRoutes);
+server.register(contactRoutes);
 
 export default server;

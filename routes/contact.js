@@ -1,6 +1,7 @@
 export default async function (server, opts) {
   server.post("/api/contact", async (req, res) => {
     const { name, email, message } = req.body;
+    console.log(req.body);
 
     if (!name || !email || !message) {
       res.code(400).send({ message: "All fields are required" });
